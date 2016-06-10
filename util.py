@@ -5,7 +5,6 @@ import globalvars
 import uuid
 import pickle
 import os
-import naming
 import sys
 import random
 
@@ -83,12 +82,6 @@ def short_id(long_id):
 def vec_dist(a,b):
     diff = b-a
     return np.sqrt( np.vdot( diff , diff ) )
-
-def planet_name(planet=None,planet_type=None):
-    return naming.planet_name(planet,planet_type)
-
-def star_name(star=None):
-    return "Placeholder Star"
 
 def fig2rgb_array(fig):
     fig.canvas.draw()
