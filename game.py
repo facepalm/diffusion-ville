@@ -5,6 +5,10 @@ import random
 import globalvars
 import util
 
+import maps
+
+import cv2
+
 
 class Universe(object):    
     def __init__(self):
@@ -12,7 +16,38 @@ class Universe(object):
         
     def generate_world(self,world_type='Generic'):            
     
-        pass
+        self.maptype = random.choice(['FOREST','VALLEY'])
+        self.maptype = 'VALLEY'
+        if self.maptype == 'FOREST':
+            self.game_map = maps.Map(size=[300,300])
+            self.game_map.vegetation.randomize('pareto')
+            self.game_map.height.randomize('pareto',10)
+            self.game_map.height.diffuse(10)
+        else: #VALLEY
+            self.game_map = maps.Map(size=[500,200])
+            self.game_map.vegetation.randomize('pareto')
+            self.game_map.height.randomize('pareto')
+            for i in range(0,15):
+                p1 = [random.randint(0,199),random.randint(20,480)]
+                p2 = [random.randint(0,199),random.randint(20,480)]
+                p1[0] *= pow(p1[1]/500.,3)
+                p2[0] = 199 - p2[0]*pow(p2[1]/500.,3)
+                print p1, p2
+                self.game_map.height.data[p1[1],p1[0]] = random.randint(10000,20000)*p1[1]/500.
+                self.game_map.height.data[p2[1],p2[0]] = random.randint(10000,20000)*p2[1]/500.     
+            for i in range(50): self.game_map.height.diffuse(5)
+            self.game_map.height.data *= 100/self.game_map.height.data.max()
+            
+        treeline = 20    
+        self.game_map.vegetation.bloom(treeline-self.game_map.height.data)   
+            
+        imdata = self.game_map.vegetation.data.copy()
+        print imdata
+        m = max(imdata.ravel())
+        imdata = np.divide(imdata,m)
+        
+        cv2.imshow('rawfield', imdata)
+        cv2.waitKey(100)   
         
         #self.system_distribution = util.getWackyDist(total_mass = 1E29, objects = 20, wacky_facty = 0.5)
                             
