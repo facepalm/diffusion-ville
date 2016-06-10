@@ -17,7 +17,7 @@ class Universe(object):
     def generate_world(self,world_type='Generic'):            
     
         self.maptype = random.choice(['FOREST','VALLEY'])
-        self.maptype = 'VALLEY'
+
         if self.maptype == 'FOREST':
             self.game_map = maps.Map(size=[300,300])
             self.game_map.vegetation.randomize('pareto')
