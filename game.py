@@ -16,17 +16,22 @@ class Universe(object):
         
     def generate_world(self,world_type='Generic'):            
     
-        self.maptype = random.choice(['FOREST','VALLEY'])
+        self.maptype = random.choice(['FOREST','GRASSLAND','VALLEY'])
 
         if self.maptype == 'FOREST':
             self.game_map = maps.Map(size=[300,300])
-            self.game_map.vegetation.randomize('pareto')
-            self.game_map.height.randomize('pareto',10)
+            self.game_map.vegetation.randomize('pareto',4)
+            self.game_map.height.randomize('pareto',5)
+            self.game_map.height.diffuse(10)
+        elif self.maptype == 'GRASSLAND':
+            self.game_map = maps.Map(size=[300,300])
+            self.game_map.vegetation.randomize('pareto',5)
+            self.game_map.height.randomize('pareto',5)
             self.game_map.height.diffuse(10)
         else: #VALLEY
             self.game_map = maps.Map(size=[500,200])
-            self.game_map.vegetation.randomize('pareto')
-            self.game_map.height.randomize('pareto')
+            self.game_map.vegetation.randomize('pareto',2)
+            self.game_map.height.randomize('pareto',5)
             for i in range(0,15):
                 p1 = [random.randint(0,199),random.randint(20,480)]
                 p2 = [random.randint(0,199),random.randint(20,480)]
@@ -41,10 +46,13 @@ class Universe(object):
         treeline = 20    
         self.game_map.vegetation.bloom(treeline-self.game_map.height.data)   
             
+            
+            
+            
         imdata = self.game_map.vegetation.data.copy()
         print imdata
-        m = max(imdata.ravel())
-        imdata = np.divide(imdata,m)
+        #m = max(imdata.ravel())
+        #imdata = np.divide(imdata,m)
         
         cv2.imshow('rawfield', imdata)
         cv2.waitKey(100)   
