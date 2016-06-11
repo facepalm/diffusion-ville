@@ -4,19 +4,47 @@ import skimage.filters
 import skimage.morphology
 import random
 
+from kivy.lang import Builder
+from kivy.uix.screenmanager import Screen
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.scrollview import ScrollView
+
 
 default_size = [200,300]
 
-class Map(object):
-    def __init__(self, size=default_size):
-        self.size = size
+kv = '''
+<MapScreen@Screen>:
+    name: 'genericname'
+    ScrollView:        
+        id: mapscroll
+           
+'''
+
+Builder.load_string(kv)
+
+class MapScreen(Screen):
+    pass
+
+class Map(GridLayout):
+    
+    def __init__(self, **kwargs):
+        _size = kwargs['_size'] if '_size' in kwargs else default_size
+        self.mapsize_x = _size[0]
+        self.mapsize_y = _size[1]
         
-        self.height = Layer(self.size)
+        self.elevation = Layer([self.mapsize_x,self.mapsize_y])
         
-        self.vegetation = Layer(self.size)
+        self.vegetation = Layer([self.mapsize_x,self.mapsize_y])
         
         self.layer = dict()
-        self.layer['Pixies'] = ScentLayer(self.size)
+        self.layer['Pixies'] = ScentLayer([self.mapsize_x,self.mapsize_y])
+        
+        super(Map, self).__init__(**kwargs) 
+        
+        self.rows = self.mapsize_y
+        self.cols = self.mapsize_x
+        self.size_hint = (None, None)
+        self.size = self.mapsize_x*64,self.mapsize_y*64
 
     def update(self,dt=0):
         for v in self.layer.values():
