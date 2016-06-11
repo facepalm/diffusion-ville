@@ -11,6 +11,7 @@ from kivy.uix.scrollview import ScrollView
 
 
 default_size = [200,300]
+scale = 1.0
 
 kv = '''
 <MapScreen@Screen>:
@@ -44,7 +45,7 @@ class Map(GridLayout):
         self.rows = self.mapsize_y
         self.cols = self.mapsize_x
         self.size_hint = (None, None)
-        self.size = self.mapsize_x*64,self.mapsize_y*64
+        self.size = self.mapsize_x*16*scale,self.mapsize_y*16*scale
 
     def update(self,dt=0):
         for v in self.layer.values():
