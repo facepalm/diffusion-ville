@@ -10,11 +10,14 @@ class Tile(Image):
         self.texture = TEX_GRASS
         super(Tile, self).__init__(source=self.source, **kwargs)
         
-        
     def reload_texture(self):
         if not self.parent: return
         veg = self.parent.vegetation.data[self.index]        
         elev = self.parent.elevation.data[self.index]        
         
+        print veg, elev, self.index
+        
         if veg > 1.0:
             self.texture = TEX_TREE
+        elif veg > 0.5:
+            self.texture = TEX_BUSH    

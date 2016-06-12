@@ -54,12 +54,13 @@ class Map(GridLayout):
         self.size_hint = (None, None)
         self.size = self.mapsize_x*16*scale,self.mapsize_y*16*scale
 
-        for x in range(0,self.mapsize_x-1):
-            for y in range(0, self.mapsize_y-1):
+        for x in range(0,10):#self.mapsize_x-1):
+            for y in range(0,10):# self.mapsize_y-1):
                 print (x,y)
                 mapt = tile.Tile(index=(x,y),allow_stretch=True,size_hint=(None, None))
                 #mapt = Image(source='game-assets/tiles_forest.png')
-                self.add_widget(mapt)                    
+                self.add_widget(mapt)  
+                mapt.reload_texture()                  
 
     def update(self,dt=0):
         for v in self.layer.values():
