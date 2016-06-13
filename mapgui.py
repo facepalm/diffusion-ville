@@ -12,7 +12,7 @@ from maps import Layer
 
 kv = '''
 <MapScreen@Screen>:
-    name: 'map name'
+    name: 'map name'    
     Scatter:
         id: mapscale
         FloatLayout:
@@ -60,7 +60,7 @@ class MapImage(Image):
     
     def process_map(self,_map):
         self.parent.scale=16.0
-    
+        self.parent.pos = (-750+_map.mapsize_y/2,-750+_map.mapsize_x/2)
         self.map = _map
         
         self.bumps = Layer([_map.mapsize_y,_map.mapsize_x])
