@@ -4,15 +4,15 @@ import skimage.filters
 import skimage.morphology
 import random
 
-default_size = [200,300]
+default_size = [222,222]
 scale = 1.0
 
 class Map(object):
     
     def __init__(self, **kwargs):
-        _size = kwargs['_size'] if '_size' in kwargs else default_size
-        self.mapsize_x = _size[0]
-        self.mapsize_y = _size[1]
+        size = kwargs['size'] if 'size' in kwargs else default_size
+        self.mapsize_x = size[0]
+        self.mapsize_y = size[1]
         
         self.elevation = Layer([self.mapsize_x,self.mapsize_y])
         
