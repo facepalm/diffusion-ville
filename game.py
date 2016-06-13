@@ -6,6 +6,7 @@ import globalvars
 import util
 
 import maps
+import mapgui
 
 import cv2
 
@@ -46,9 +47,8 @@ class Universe(object):
         treeline = 20    
         self.game_map.vegetation.bloom(treeline-self.game_map.elevation.data)   
             
-        mapscreen = maps.MapScreen()
-        mapscreen.name = 'Home Map'
-        mapscreen.ids['mapscroll'].add_widget(self.game_map)
+        mapscreen = mapgui.MapScreen(name='Home Map')
+        mapscreen.ids['mapimg'].process_map(self.game_map)
             
         globalvars.root.screen_manager.add_widget(mapscreen)      
         globalvars.root.screen_manager.current = mapscreen.name

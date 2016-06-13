@@ -4,33 +4,10 @@ import skimage.filters
 import skimage.morphology
 import random
 
-from kivy.lang import Builder
-from kivy.uix.screenmanager import Screen
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.widget import Widget
-
-from kivy.uix.image import Image
-
-import tile
-
 default_size = [200,300]
 scale = 1.0
 
-kv = '''
-<MapScreen@Screen>:
-    name: 'genericname'
-    ScrollView:        
-        id: mapscroll
-           
-'''
-
-Builder.load_string(kv)
-
-class MapScreen(Screen):
-    pass
-
-class Map(GridLayout):
+class Map(object):
     
     def __init__(self, **kwargs):
         _size = kwargs['_size'] if '_size' in kwargs else default_size
@@ -44,9 +21,9 @@ class Map(GridLayout):
         self.layer = dict()
         self.layer['Pixies'] = ScentLayer([self.mapsize_x,self.mapsize_y])
         
-        super(Map, self).__init__(**kwargs) 
+        #super(Map, self).__init__(**kwargs) 
         
-        self.rows = self.mapsize_y
+        '''self.rows = self.mapsize_y
         self.row_default_height=16
         self.cols = self.mapsize_x
         self.col_default_width=16
@@ -57,10 +34,10 @@ class Map(GridLayout):
         for x in range(0,10):#self.mapsize_x-1):
             for y in range(0,10):# self.mapsize_y-1):
                 print (x,y)
-                mapt = tile.Tile(index=(x,y),allow_stretch=True,size_hint=(None, None))
+                mapt = tile.Tile(index=(x,y),allow_stretch=False,size_hint=(None, None))
                 #mapt = Image(source='game-assets/tiles_forest.png')
                 self.add_widget(mapt)  
-                mapt.reload_texture()                  
+                mapt.reload_texture()                  '''
 
     def update(self,dt=0):
         for v in self.layer.values():
