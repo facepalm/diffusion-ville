@@ -8,6 +8,8 @@ from kivy.graphics.texture import Texture
 
 import numpy as np
 
+from maps import Layer
+
 kv = '''
 <MapScreen@Screen>:
     name: 'map name'
@@ -32,7 +34,7 @@ class MapImage(Image):
         pass#self.blit_texture = Texture.create(size=(100, 100), colorfmt='rgba')
         self.buffer = None
         super(MapImage,self).__init__(**kwargs)
-    
+        
     def float2uint(self,buf):
         out32 = buf.copy()
         out32[out32 < 0 ] = 0
@@ -42,17 +44,53 @@ class MapImage(Image):
         return out32.astype(np.uint8)
         
     
-    def process_map(self,_map):
-        self.map = _map
-        self.buffer = np.zeros((_map.mapsize_y,_map.mapsize_x,4),dtype=np.float32)
-        self.buffer[:,:,0] = np.transpose(_map.elevation.data.copy())
-        self.buffer[:,:,1] = np.transpose(_map.vegetation.data.copy())
-        self.buffer[:,:,3] = np.ones((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
+    def refresh_map(self):
+        #no reloading, just redrawing
+
+        veg = np.transpose(self.map.vegetation.data.copy())        
+        veg[veg < 0] = 0
+        self.buffer = self.baseimg.copy()        
+        self.buffer[veg > 0,0] *= 0.5
+        self.buffer[:,:,1] += (veg/2)
         
-        self.data = self.float2uint(self.buffer).tostring()
+        data = self.float2uint(self.buffer).tostring()
+        
+        self.texture.blit_buffer(data, colorfmt='rgba', bufferfmt='ubyte')
+        
+    
+    def process_map(self,_map):
+        self.parent.scale=4.0
+    
+        self.map = _map
+        
+        self.bumps = Layer([_map.mapsize_y,_map.mapsize_x])
+        self.bumps.randomize()
+        
+        self.buffer = np.zeros((_map.mapsize_y,_map.mapsize_x,4),dtype=np.float32)
+        elev = np.transpose(_map.elevation.data.copy())
+        #self.buffer[:,:,1] = np.transpose(_map.vegetation.data.copy())
+        #self.buffer[:,:,3] = np.ones((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
+        
+        self.baseimg = np.zeros((_map.mapsize_y,_map.mapsize_x,4),dtype=np.float32)
+        self.baseimg[:,:,3] = np.ones((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
+        r = np.zeros((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
+        g = np.zeros((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
+        b = np.zeros((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
+        r[elev <= 20] = 0.46
+        r[elev > 20] = 0.33
+        g[elev <= 20] = 0.15
+        g[elev > 20] = 0.33
+        b[elev <= 20] = 0.05
+        b[elev > 20] = 0.33
+        self.baseimg[:,:,0] = np.multiply(r,1+.2*self.bumps.data)
+        self.baseimg[:,:,1] = np.multiply(g,1+.2*self.bumps.data)
+        self.baseimg[:,:,2] = np.multiply(b,1+.2*self.bumps.data)
+                
+        #basedata = self.float2uint(self.baseimg).tostring()
+        
+        #self.data = self.float2uint(self.buffer).tostring()
         
         self.texture = Texture.create(size=(_map.mapsize_x, _map.mapsize_y), colorfmt="rgba")
-        self.texture.blit_buffer(self.data, colorfmt='rgba', bufferfmt='ubyte')
-        #relaod map
-        self.parent.scale=4.0
-        print _map
+        #self.texture.blit_buffer(basedata, colorfmt='rgba', bufferfmt='ubyte')
+        self.refresh_map()
+
