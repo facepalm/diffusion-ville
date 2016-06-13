@@ -59,7 +59,7 @@ class MapImage(Image):
         
     
     def process_map(self,_map):
-        self.parent.scale=4.0
+        self.parent.scale=16.0
     
         self.map = _map
         
@@ -76,12 +76,13 @@ class MapImage(Image):
         r = np.zeros((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
         g = np.zeros((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
         b = np.zeros((_map.mapsize_y,_map.mapsize_x),dtype=np.float32)
-        r[elev <= 20] = 0.46
-        r[elev > 20] = 0.33
-        g[elev <= 20] = 0.15
-        g[elev > 20] = 0.33
-        b[elev <= 20] = 0.05
-        b[elev > 20] = 0.33
+        tree_line=20
+        r[elev <= tree_line] = 0.46
+        r[elev > tree_line] = 0.33
+        g[elev <= tree_line] = 0.15
+        g[elev > tree_line] = 0.33
+        b[elev <= tree_line] = 0.05
+        b[elev > tree_line] = 0.33
         self.baseimg[:,:,0] = np.multiply(r,1+.2*self.bumps.data)
         self.baseimg[:,:,1] = np.multiply(g,1+.2*self.bumps.data)
         self.baseimg[:,:,2] = np.multiply(b,1+.2*self.bumps.data)
@@ -94,3 +95,4 @@ class MapImage(Image):
         #self.texture.blit_buffer(basedata, colorfmt='rgba', bufferfmt='ubyte')
         self.refresh_map()
 
+        print self.parent.x, self.parent.y
