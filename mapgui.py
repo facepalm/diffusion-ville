@@ -5,6 +5,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.graphics.texture import Texture
+from kivy.app import App
 
 import numpy as np
 
@@ -13,14 +14,17 @@ from maps import Layer
 kv = '''
 <MapScreen@Screen>:
     name: 'map name'    
+    pos_hint: {'center_x': 0.5, 'center_y': .5}
     Scatter:
         id: mapscale
-        FloatLayout:
-            id: maplayout
+        pos: 0,0
+        do_collide_after_children: True
+        do_rotation: False
         MapImage:
             id: mapimg
-            allow_stretch: False                        
-           
+            allow_stretch: True                        
+        FloatLayout:
+            id: maplayout   
 '''
 
 Builder.load_string(kv)
@@ -33,6 +37,7 @@ class MapImage(Image):
     def __init__(self,**kwargs):
         pass#self.blit_texture = Texture.create(size=(100, 100), colorfmt='rgba')
         self.buffer = None
+        
         super(MapImage,self).__init__(**kwargs)
         
     def float2uint(self,buf):
@@ -53,15 +58,28 @@ class MapImage(Image):
         self.buffer[veg > 0,0] *= 0.5
         self.buffer[:,:,1] += (veg/2)
         
+        #self.buffer[:,:,3] = 0
+        
         data = self.float2uint(self.buffer).tostring()
+        
+        
+        #data = np.zeros((1,1,3),dtype=np.uint8)
+        #data[0,0,:] = 255
+        #data = data.tostring()
+        #self.texture = Texture.create(size=(1,1), colorfmt="rgb")
         
         self.texture.blit_buffer(data, colorfmt='rgba', bufferfmt='ubyte')
         
     
     def process_map(self,_map):
-        self.parent.scale=16.0
-        self.parent.pos = (-750+_map.mapsize_y/2,-750+_map.mapsize_x/2)
+        
+        #(-750+_map.mapsize_y/2,-750+_map.mapsize_x/2)
         self.map = _map
+        
+        self.allow_stretch = True
+        self.size = [_map.mapsize_x,_map.mapsize_y]
+        #self.parent.size= [_map.mapsize_y*self.parent.scale,_map.mapsize_x*self.parent.scale]
+        self.size_hint = [None, None]
         
         self.bumps = Layer([_map.mapsize_y,_map.mapsize_x])
         self.bumps.randomize()
@@ -92,7 +110,12 @@ class MapImage(Image):
         #self.data = self.float2uint(self.buffer).tostring()
         
         self.texture = Texture.create(size=(_map.mapsize_x, _map.mapsize_y), colorfmt="rgba")
+        print self.texture.size
         #self.texture.blit_buffer(basedata, colorfmt='rgba', bufferfmt='ubyte')
         self.refresh_map()
 
-        print self.parent.x, self.parent.y
+        self.parent.scale = 2.0
+
+        print self.parent.parent.center_x
+        self.parent.pos = (0,0)
+        print self.parent.pos, self.parent.size, self.pos, self.size

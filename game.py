@@ -7,6 +7,7 @@ import util
 
 import maps
 import mapgui
+import goblin
 
 import cv2
 
@@ -48,9 +49,13 @@ class Universe(object):
         self.game_map.vegetation.bloom(treeline-self.game_map.elevation.data)   
             
         mapscreen = mapgui.MapScreen(name='Home Map')
+        globalvars.root.screen_manager.add_widget(mapscreen) 
         mapscreen.ids['mapimg'].process_map(self.game_map)
             
-        globalvars.root.screen_manager.add_widget(mapscreen)      
+        g = goblin.Goblin(self.game_map)
+        mapscreen.ids['mapimg'].add_widget(g.image())    
+            
+             
         globalvars.root.screen_manager.current = mapscreen.name
             
         #imdata = self.game_map.vegetation.data.copy()
