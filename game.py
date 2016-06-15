@@ -48,15 +48,16 @@ class Universe(object):
         treeline = 20    
         self.game_map.vegetation.bloom(treeline-self.game_map.elevation.data)   
             
-        mapscreen = mapgui.MapScreen(name='Home Map')
-        globalvars.root.screen_manager.add_widget(mapscreen) 
-        mapscreen.ids['mapimg'].process_map(self.game_map)
+        self.mapscreen = mapgui.MapScreen(name='Home Map')
+        globalvars.root.screen_manager.add_widget(self.mapscreen) 
+        self.mapscreen.ids['mapimg'].process_map(self.game_map)
             
-        g = goblin.Goblin(self.game_map)
-        mapscreen.ids['mapimg'].add_widget(g.image())    
+        for i in range(0,12):            
+            g = goblin.Goblin(self.game_map)
+            self.mapscreen.ids['mapimg'].add_widget(g.image())    
             
              
-        globalvars.root.screen_manager.current = mapscreen.name
+        globalvars.root.screen_manager.current = self.mapscreen.name
             
         #imdata = self.game_map.vegetation.data.copy()
         #print imdata
@@ -66,69 +67,14 @@ class Universe(object):
         #cv2.imshow('rawfield', imdata)
         #cv2.waitKey(100)   
         
-        #self.system_distribution = util.getWackyDist(total_mass = 1E29, objects = 20, wacky_facty = 0.5)
-                            
-        #primary_star_mass = wald.rvs(loc=0.2, scale=1.5, size=1)[0]
         
-        #self.system_distribution = self.system_distribution[self.system_distribution != primary_star_mass]
-        
-        #self.primary = planet.Star(solar_masses=primary_star_mass)
-        
-        #print self.primary.info()
-        
-        #num_orbits = np.random.randint(8,18)
-        #orbits = [pow(10,1.5*x)- 0.6 for x in np.random.random(num_orbits)]
-        #np.random.shuffle( orbits )
-        #orbits = orbits[ orbits != 2 ]
-        #orbit_mass = np.random.choice(self.system_distribution,size=num_orbits,replace=False)
-        
-        #self.planets = []
-        
-        '''for i in range(num_orbits):
-            mass = orbit_mass[i]
-            print mass, orbits[i]
-                
-            #initialize planet, extend list (might be a list of asteroids instead)    
-            newp = planet.generate_planet(mass,self.primary,orbits[i])
-            for p in newp:
-                globalvars.root.screen_manager.add_widget(p.view)
-                print p.view.name, globalvars.root.screen_manager.children
-            self.planets.extend(newp)
-            
-        #habitable zone world        
-        newp = planet.generate_planet(random.random()*9E24 + 1E24,self.primary,self.primary.random_habitable_orbit())
-        for p in newp:
-            globalvars.root.screen_manager.add_widget(p.view)
-        self.planets.extend(newp)  
-        
-        #hohmann.calculate_hohmann(random.choice(self.planets),random.choice(self.planets))
-        #hohmann.transfer_breakdown(random.choice(random.choice(self.planets).sites),random.choice(random.choice(self.planets).sites))
-        #quit()
-        
-        #instantiate Ark
-        theArk = ark.Ark(site=newp[0].sites[0])
-        theArk.build(free=True)  
-        newp[0].sites[0].resources.add('antimatter',1000)
-        newp[0].sites[0].resources.add('rocket engines',100)
-        newp[0].sites[0].resources.add('rocket fuel',1000)
-        
-        t = structure.RTG(site=newp[0].sites[0])
-        t.build(free=True)
-        
-        
-        reg = structure.PlaceholderRegolithMiner(site=newp[0].sites[0])
-        reg.build(free=True)  
-
-        
-        #print theArk.composition
-        self.primary.view.system_view.update()
-        globalvars.root.screen_manager.add_widget(self.primary.view)      
-        globalvars.root.screen_manager.current = self.primary.view.name'''
 
     def update(self,dt):
+        self.mapscreen.ids['mapimg'].refresh_map()
+        secs = dt*globalvars.config['TIME FACTOR']
         for obj in globalvars.ids.values():
             if hasattr(obj,'update'):
-                obj.update(dt)
+                obj.update(secs)
                 
     def add_exploration(self,amt=0.0001,limit=0.1):
         for obj in globalvars.ids.values():

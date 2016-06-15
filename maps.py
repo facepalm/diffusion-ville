@@ -2,7 +2,10 @@ import numpy as np
 import cv2
 import skimage.filters
 import skimage.morphology
+from scipy.ndimage import gaussian_filter
 import random
+
+import util
 
 default_size = [222,222]
 scale = 1.0
@@ -10,6 +13,8 @@ scale = 1.0
 class Map(object):
     
     def __init__(self, **kwargs):
+        self.id = util.register(self)
+    
         size = kwargs['size'] if 'size' in kwargs else default_size
         self.mapsize_x = size[0]
         self.mapsize_y = size[1]
@@ -42,6 +47,15 @@ class Map(object):
     def update(self,dt=0):
         for v in self.layer.values():
             v.update(dt)
+            
+    def deposit_scent(self,name,pos,val):
+        if name not in self.layer: self.layer[name] = ScentLayer([self.mapsize_x,self.mapsize_y])
+        self.layer[name].deposit(pos,val)     
+        
+    def fetch_scent(self,name):
+        if name not in self.layer: self.layer[name] = ScentLayer([self.mapsize_x,self.mapsize_y])
+        return self.layer[name]
+              
 
 class Layer(object):
     def __init__(self, size=default_size):
@@ -68,7 +82,7 @@ class Layer(object):
         #self.data [self.data < 0] = 0
 
     def diffuse(self,scale=2):
-        self.data = skimage.filters.gaussian(self.data,scale)
+        self.data = gaussian_filter(self.data,scale)
     
         
     def update(self,dt=0):
@@ -77,9 +91,10 @@ class Layer(object):
 class ScentLayer(Layer):
     def update(self,dt=0):
         self.data *= 0.998
-        self.data = skimage.filters.gaussian(self.data,2)
+        self.data = gaussian_filter(self.data,2)
     
-    
+    def deposit(self,pos,val):
+        self.data[pos[0],pos[1]] += val
         
         
 if __name__ == "__main__":
