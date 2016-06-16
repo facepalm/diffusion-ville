@@ -75,6 +75,9 @@ class Universe(object):
         for obj in globalvars.ids.values():
             if hasattr(obj,'update'):
                 obj.update(secs)
+
+    def map_update(self,dt):
+        self.game_map.update_layers()
                 
     def add_exploration(self,amt=0.0001,limit=0.1):
         for obj in globalvars.ids.values():

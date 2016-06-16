@@ -83,6 +83,7 @@ class GameApp(App):
         #globalvars.universe.primary.view.update(clear=True)
         
         Clock.schedule_interval(globalvars.universe.update, 1)#./33.)        
+        Clock.schedule_interval(globalvars.universe.map_update, 1./33.) 
         
         return root
         

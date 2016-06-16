@@ -7,6 +7,7 @@ import pickle
 import os
 import sys
 import random
+import math
 
 
 #TIME_FACTOR = 168 # 1 irl hour = 1 week
@@ -18,6 +19,10 @@ import random
 #GRAPHICS = None
 GLOBAL_X=0
 GLOBAL_Y=0
+
+def sround(num):
+    base = math.floor(num)    
+    return int(base + 1) if random.random() < num%1 else int(base)       
 
 def radian(deg):
     return 3.14159*deg/180

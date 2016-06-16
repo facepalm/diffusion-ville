@@ -45,6 +45,9 @@ class Map(object):
                 mapt.reload_texture()                  '''
 
     def update(self,dt=0):
+        pass
+        
+    def update_layers(self,dt=0):        
         for v in self.layer.values():
             v.update(dt)
             
