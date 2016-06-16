@@ -50,6 +50,8 @@ class Goblin(object):
         
         
     def wander(self,dist=2):
+        patchx1, patchx2, patchy1, patchy2 = self.pos[0]-dist, self.pos[0]+dist+1,self.pos[1]-dist, self.pos[1]+dist+1
+        
         self.walk(random.randint(-2,2),random.randint(-2,2))
             
     def walk(self,dx,dy):
