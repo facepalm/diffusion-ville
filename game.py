@@ -54,6 +54,7 @@ class Universe(object):
             
         for i in range(0,12):            
             g = goblin.Goblin(self.game_map)
+            if i==0: g.wealth=100
             self.mapscreen.ids['mapimg'].add_widget(g.image())    
             
              

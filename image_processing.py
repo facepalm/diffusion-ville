@@ -40,10 +40,17 @@ def pilLoadData(filename):
     print filename+" loaded (PIL)", bigtif.shape
     return bigtif.squeeze()
 
+def lognorm(img,minval=None,maxval=None):
+    out = np.array(img,dtype='float32',copy=True)
+    out[out < 0] = 0
+    out = np.log(out+1)
+    return norm(out,minval,maxval)
+
 def norm(img,minval=None,maxval=None):
     out = np.array(img,dtype='float32',copy=True)
     if not minval: minval = out.min()
     if not maxval: maxval = out.max()
+    if minval == maxval: return out
     out -= minval
     out /= maxval - minval
     

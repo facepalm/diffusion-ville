@@ -58,7 +58,7 @@ class MapImage(Image):
         self.buffer[veg > 0,0] *= 0.5
         self.buffer[:,:,1] += (veg/2)
         
-        gob = np.transpose(self.map.fetch_scent('Goblin').data.copy()) 
+        gob = np.transpose(self.map.fetch_scent('Wealth').data.copy()) 
         self.buffer[:,:,2] = (gob/gob.max())
         print gob.mean()
         
