@@ -50,6 +50,7 @@ class Goblin(object):
         self.wealth = 0.0 #money owed by/to the larger community
         self.credit_limit = 0.0 #amount
         
+        self.labor = 0 #stored workload
         
         #skills
         self.skills = { 'Strength': random.randint(1,3), 
@@ -78,7 +79,15 @@ class Goblin(object):
         i = np.where(inds == ind)
         #print inds, ind
         #print i, i[0], i[1][0]
+        
+        if self.labor > 1.0:
+            self.labor -= self.forage(self.labor - 1.0)
+            
+        
         self.walk(i[0][0]-dist,i[1][0]-dist)
+            
+    def forage(self,amt):
+        veg = self.map.fetch_scent('Vegetation').data[ self.pos[0], self.pos[1] ]
             
     def walk(self,dx,dy):
         self.pos[0] += int(dx)
