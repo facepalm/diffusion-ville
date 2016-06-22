@@ -23,6 +23,8 @@ class Map(object):
         
         self.vegetation = Layer([self.mapsize_x,self.mapsize_y])
         
+        self.ownership = Layer([self.mapsize_x,self.mapsize_y],dtype=np.uint16)
+        
         self.layer = dict()
         self.layer['Pixies'] = ScentLayer([self.mapsize_x,self.mapsize_y])
         
@@ -61,9 +63,9 @@ class Map(object):
               
 
 class Layer(object):
-    def __init__(self, size=default_size):
+    def __init__(self, size=default_size,dtype=np.float32):
         self.size=size
-        self.data = np.zeros(self.size,np.float32)
+        self.data = np.zeros(self.size,dtype=dtype)
 
     def random_addition(self):
         rx = random.randint(0,self.data.shape[0]-1)

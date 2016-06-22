@@ -73,11 +73,18 @@ class Goblin(object):
         #print inds, ind
         #print i, i[0], i[1][0]
         self.walk(i[0][0]-dist,i[1][0]-dist)
+        
+        self.forage(dt)
             
     def walk(self,dx,dy):
         self.pos[0] += int(dx)
         self.pos[1] += int(dy)
                 
+    def forage(self,dt):
+        own = self.map.ownership.data[self.x,self.y]
+        if own == 0 or own == int(util.short_id(self.id), 16): 
+            #we can forage this spot
+            pass
 
     def image(self):
         if self.myimage is not None: return self.myimage
