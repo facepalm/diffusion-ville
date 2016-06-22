@@ -46,6 +46,12 @@ class Goblin(object):
         pos[1] += random.randint(-30,30)
         self.pos = [ int(pos[0]),int(pos[1]) ]
         
+        #fiscal data
+        self.wealth = 0.0 #money owed by/to the larger community
+        self.credit_limit = 0.0 #amount
+        
+        self.labor = 0 #stored workload
+        
         #skills
         self.skills = { 'Strength': random.randint(1,3), 
                         'Subtlety': random.randint(1,3), 
@@ -59,11 +65,12 @@ class Goblin(object):
         px1, px2, py1, py2 = self.pos[0]-dist, self.pos[0]+dist+1,self.pos[1]-dist, self.pos[1]+dist+1
         inds = np.reshape(np.array(range(0,pow(2*dist+1,2))),(2*dist+1,2*dist+1))
         elev = self.map.elevation.data[px1:px2,py1:py2]
-        gob = ip.norm(self.map.fetch_scent('Goblin').data[px1:px2,py1:py2])
+        wlth = ip.lognorm(self.map.fetch_scent('Wealth').data[px1:px2,py1:py2])
+        gob = ip.lognorm(self.map.fetch_scent('Goblin').data[px1:px2,py1:py2])
         
         heat = np.random.random_sample(elev.shape)
         
-        prob = ip.norm(heat+gob-elev/4)
+        prob = ip.norm(heat+wlth-elev/4-gob)
         prob /= prob.sum()
         
         #print elev
@@ -72,9 +79,17 @@ class Goblin(object):
         i = np.where(inds == ind)
         #print inds, ind
         #print i, i[0], i[1][0]
+        
+        if self.labor > 1.0:
+            self.labor -= self.forage(self.labor - 1.0)
+            
+        
         self.walk(i[0][0]-dist,i[1][0]-dist)
         
         self.forage(dt)
+            
+    def forage(self,amt):
+        veg = self.map.fetch_scent('Vegetation').data[ self.pos[0], self.pos[1] ]
             
     def walk(self,dx,dy):
         self.pos[0] += int(dx)
@@ -93,5 +108,6 @@ class Goblin(object):
         
     def update(self,dt):
         self.map.deposit_scent('Goblin',self.pos,dt)
+        self.map.deposit_scent('Wealth',self.pos,max(0,self.wealth)*dt/3600.)
         self.wander(dt)
         self.myimage.refresh()

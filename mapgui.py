@@ -15,6 +15,12 @@ kv = '''
 <MapScreen@Screen>:
     name: 'map name'    
     pos_hint: {'center_x': 0.5, 'center_y': .5}
+    FloatLayout:
+        id: mapoverlay   
+        Button: 
+            pos_hint: {'top': 1.0, 'right': 1.0}
+            size_hint: 0.15,0.15
+            text: 'Build'
     Scatter:
         id: mapscale
         pos: 0,0
@@ -23,8 +29,7 @@ kv = '''
         MapImage:
             id: mapimg
             allow_stretch: True                        
-        FloatLayout:
-            id: maplayout   
+    
 '''
 
 Builder.load_string(kv)
@@ -58,7 +63,7 @@ class MapImage(Image):
         self.buffer[veg > 0,0] *= 0.5
         self.buffer[:,:,1] += (veg/2)
         
-        gob = np.transpose(self.map.fetch_scent('Goblin').data.copy()) 
+        gob = np.transpose(self.map.fetch_scent('Wealth').data.copy()) 
         self.buffer[:,:,2] = (gob/gob.max())
         print gob.mean()
         
