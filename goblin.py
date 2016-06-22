@@ -50,7 +50,7 @@ class Goblin(object):
         self.wealth = 0.0 #money owed by/to the larger community
         self.credit_limit = 0.0 #amount
         
-        self.labor = 0 #stored workload
+        self.labor = random.random() #stored workload
         
         #skills
         self.skills = { 'Strength': random.randint(1,3), 
@@ -60,11 +60,15 @@ class Goblin(object):
         
         
     def wander(self,dt):
-        dist = util.sround(self.skills['Speed']*(dt/60.))
+        dist = util.sround(self.skills['Speed']*(dt/3600.))
         if dist == 0: return
-        px1, px2, py1, py2 = self.pos[0]-dist, self.pos[0]+dist+1,self.pos[1]-dist, self.pos[1]+dist+1
+        px1, px2, py1, py2 = max(0,self.pos[0]-dist), self.pos[0]+dist+1, max(0,self.pos[1]-dist), self.pos[1]+dist+1
+        px2 = min(self.map.mapsize_x,px2)
+        py2 = min(self.map.mapsize_y,py2)
+        
         inds = np.reshape(np.array(range(0,pow(2*dist+1,2))),(2*dist+1,2*dist+1))
         elev = self.map.elevation.data[px1:px2,py1:py2]
+        #inds = np.arange(len(elev.ravel())).reshape(abs(px2-px1+1), abs(py2-py1+1))
         wlth = ip.lognorm(self.map.fetch_scent('Wealth').data[px1:px2,py1:py2])
         gob = ip.lognorm(self.map.fetch_scent('Goblin').data[px1:px2,py1:py2])
         
@@ -80,26 +84,28 @@ class Goblin(object):
         #print inds, ind
         #print i, i[0], i[1][0]
         
-        if self.labor > 1.0:
+        if self.labor > 1.0 + random.random():
             self.labor -= self.forage(self.labor - 1.0)
             
         
-        self.walk(i[0][0]-dist,i[1][0]-dist)
-        
-        self.forage(dt)
-            
-    def forage(self,amt):
-        veg = self.map.fetch_scent('Vegetation').data[ self.pos[0], self.pos[1] ]
-            
+        self.walk(i[0][0]-dist,i[1][0]-dist)        
+                        
     def walk(self,dx,dy):
         self.pos[0] += int(dx)
         self.pos[1] += int(dy)
+        
+        
                 
-    def forage(self,dt):
-        own = self.map.ownership.data[self.x,self.y]
+    def forage(self,amt):
+        own = self.map.ownership.data[self.pos[0], self.pos[1]]
         if own == 0 or own == int(util.short_id(self.id), 16): 
             #we can forage this spot
-            pass
+            veg = self.map.vegetation.data[ self.pos[0], self.pos[1] ]
+            print 'foraging!', veg, amt
+            picked = max(0,min(veg,amt))
+            self.map.vegetation.data[ self.pos[0], self.pos[1] ] = veg - picked
+            return picked
+        return 0
 
     def image(self):
         if self.myimage is not None: return self.myimage
@@ -107,6 +113,9 @@ class Goblin(object):
         return self.myimage
         
     def update(self,dt):
+        self.labor += 1.*dt/util.seconds(1,'day')
+        #print 'Labor',self.labor
+        
         self.map.deposit_scent('Goblin',self.pos,dt)
         self.map.deposit_scent('Wealth',self.pos,max(0,self.wealth)*dt/3600.)
         self.wander(dt)
